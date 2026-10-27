@@ -3,28 +3,31 @@ package email
 import (
 	"net/mail"
 
-	"github.com/DouglasMaffraValiate/VESTA/pck/err"
+	"github.com/DouglasMaffraValiate/VESTA/pkg/err"
+	"github.com/DouglasMaffraValiate/VESTA/pkg/err/errCatalog"
 )
 
 type Email string
 
 func (e *Email) isValid() (bool, *err.Error) {
-	emailStr := string(*e)
+
 	err := err.NewValidationError(
-		"EmailError001",
-		"Email invalido. O email esta vazio ou tem formato inválido.",
+		errCatalog.Email001,
 		"",
 		nil,
-		map[string]string{"Email": emailStr},
+		nil,
 	)
 
 	if e == nil || len(*e) == 0 {
+		err.Atributos = map[string]string{"Email": ""}
 		return false, err
 	}
 
+	emailStr := string(*e)
 	_, errr := mail.ParseAddress(emailStr)
 
 	if errr != nil {
+		err.Atributos = map[string]string{"Email": emailStr}
 		err.Cause = errr
 		return false, err
 	}
